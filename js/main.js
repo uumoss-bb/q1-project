@@ -2,25 +2,28 @@
 let gameState = {
 
   preload: function () {
-    this.load.image('background', 'assets/background.png')
+    this.load.image('background', 'assets/wizBizBackG.png')
     this.load.image('player', 'assets/people/wiz_0.1.png')
     this.load.image('bady', 'assets/people/bady_0.1.png')
   },
 
   create: function () {
     game.physics.startSystem(Phaser.Physics.ARCADE)
+    game.world.setBounds(0, 0, 1500, 1500)
 
-    this.background = this.game.add.sprite(0, 0, 'background')
+    game.add.tileSprite(0, 0, 1500, 1500, 'background')
     //background color for checking the size
     // this.stage.backgroundColor = "#4488AA"
 
     //this is you
-    this.player = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'player')
+    this.player = game.add.sprite(300, 300, 'player')
+    game.physics.arcade.enable(this.player)
+    this.player.body.collideWorldBounds = true;
     this.player.anchor.setTo(0.5, 0.5)
-    this.player.angle = 0
+    game.camera.follow(this.player)
 
     //this is the bady
-    this.bady = this.game.add.sprite(250, 100, 'bady')
+    this.bady = game.add.sprite(250, 100, 'bady')
     this.bady.anchor.setTo(0.5, 0.5)
     this.bady.scale.setTo(1, -1) //this flips on Y axis
 
@@ -51,10 +54,10 @@ let gameState = {
       this.player.y += 4
     }
   }
-}
 
-let playerState = {
-
+  // render: function (){
+  //   game.debug.cameraInfo(this.game.camera, 32, 32);
+  // }
 }
 
 const game = new Phaser.Game(600, 600, Phaser.AUTO, 'gameDiv')
