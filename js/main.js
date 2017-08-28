@@ -33,30 +33,24 @@ let gameState = {
   update: function () {
 
     //player movement
-    if(game.input.keyboard.isDown(Phaser.Keyboard.LEFT)){
-      this.player.scale.setTo(1,1)
-      this.player.angle = -90
+    this.player.rotation = game.physics.arcade.angleToPointer(this.player) + 1.57079633
+
+    if(game.input.keyboard.isDown(Phaser.Keyboard.A)){
       this.player.x -= 4
     }
-    else if(game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)){
-      this.player.scale.setTo(1,1)
-      this.player.angle = 90
+    else if(game.input.keyboard.isDown(Phaser.Keyboard.D)){
       this.player.x += 4
     }
-    if(game.input.keyboard.isDown(Phaser.Keyboard.UP)){
-      this.player.angle = 0
-      this.player.scale.setTo(1,1)
+    if(game.input.keyboard.isDown(Phaser.Keyboard.W)){
       this.player.y -= 4
     }
-    else if(game.input.keyboard.isDown(Phaser.Keyboard.DOWN)){
-      this.player.angle = 0
-      this.player.scale.setTo(1,-1)
+    else if(game.input.keyboard.isDown(Phaser.Keyboard.S)){
       this.player.y += 4
     }
   }
 
   // render: function (){
-  //   game.debug.cameraInfo(this.game.camera, 32, 32);
+  //   game.debug.cameraInfo(this.player, 32, 32);
   // }
 }
 
