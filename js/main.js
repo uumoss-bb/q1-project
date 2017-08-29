@@ -1,4 +1,5 @@
 var total = 0
+var mob = []
 let gameState = {
 
   preload: function () {
@@ -39,6 +40,14 @@ let gameState = {
        game.physics.arcade.moveToObject(this.bady, this.player, 100)
     }
 
+    for (let a = 0; a < mob.length; a++) {
+      mob[a].anchor.setTo(0.5, 0.5)
+      game.physics.arcade.enable(mob[a])
+      mob[a].rotation = game.physics.arcade.angleBetween(mob[a], this.player) + 1.57079633
+       game.physics.arcade.moveToObject(mob[a], this.player, 100)
+
+    }
+
     //player controls
     if(game.input.keyboard.isDown(Phaser.Keyboard.A)){
       this.player.x -= 4
@@ -53,42 +62,23 @@ let gameState = {
       this.player.y += 4
     }
 
-    blah()
+    //bady spawner
+    if(total < 200 && game.time.now > timer){
+      badyCreation();
+    }
 
   }
 }
 
 function badyCreation(){
   this.bady = game.add.sprite(game.world.randomX, game.world.randomY, 'bady')
-  this.bady.anchor.setTo(0.5, 0.5)
-  game.physics.arcade.enable(this.bady)
+  mob.push(this.bady)
 
   total++;
   timer = game.time.now + 100;
 
 }
 
-function blah (){
-  if(total < 200 && game.time.now > timer)
-    {
-        badyCreation();
-    }
-}
-
-// var playerControls = function (){
-//   if(game.input.keyboard.isDown(Phaser.Keyboard.A)){
-//     this.player.x -= 4
-//   }
-//   else if(game.input.keyboard.isDown(Phaser.Keyboard.D)){
-//     this.player.x += 4
-//   }
-//   if(game.input.keyboard.isDown(Phaser.Keyboard.W)){
-//     this.player.y -= 4
-//   }
-//   else if(game.input.keyboard.isDown(Phaser.Keyboard.S)){
-//     this.player.y += 4
-//   }
-// }
 
 const game = new Phaser.Game(1000, 600, Phaser.AUTO, 'gameDiv')
 
