@@ -1,5 +1,6 @@
 var total = 0
 var mob = []
+var weapon
 let gameState = {
 
   preload: function () {
@@ -7,6 +8,7 @@ let gameState = {
     this.load.image('background', 'assets/wizBizBackG.png')
     this.load.image('player', 'assets/people/wiz_0.1.png')
     this.load.image('bady', 'assets/people/bady_0.1.png')
+    this.load.image('fireBall', 'assets/fireBall.png')
   },
 
   create: function () {
@@ -27,6 +29,14 @@ let gameState = {
     this.bady = game.add.sprite(game.world.randomX, game.world.randomY, 'bady')
     this.bady.anchor.setTo(0.5, 0.5)
     game.physics.arcade.enable(this.bady)
+
+    // //fireBall
+    // this.fireBall = game.add.sprite(30, 'fireBall')
+    // // this kills the bullet when it leaves the bounds
+    // this.fireBall.bulletKillType = Phaser.This.FireBall.KILL_WORLD_BOUNDS
+    // this.fireBall.bulletSpeed = 600;
+    // this.fireBall.fireRate = 100;
+    // this.fireBall.trackSprite(this.player, 0, 0, true);
 
   },
 
@@ -67,6 +77,11 @@ let gameState = {
       badyCreation();
     }
 
+    //shooting fireBall
+    // if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
+    //   this.fireBall.fire()
+    // }
+
   }
 }
 
@@ -78,6 +93,31 @@ function badyCreation(){
   timer = game.time.now + 100;
 
 }
+
+// fire:  function () {
+//     if (this.shipSprite.visible) {
+//
+//     if (game.time.now > this.bulletInterval) {
+//       this.sndFire.play();
+//
+//         var bullet = this.bulletGroup.getFirstExists(false);
+// 
+//         if (bullet) {
+//             var length = this.shipSprite.width * 0.9;
+//             var x = this.shipSprite.x + (Math.cos(this.shipSprite.rotation) * length);
+//             var y = this.shipSprite.y + (Math.sin(this.shipSprite.rotation) * length);
+//
+//             bullet.reset(x, y);
+//             bullet.lifespan = bulletProperties.lifeSpan;
+//             bullet.rotation = this.shipSprite.rotation;
+//
+//             game.physics.arcade.velocityFromRotation( (this.shipSprite.rotation + bulletProperties.scatter[Math.floor(Math.random()*bulletProperties.scatter.length)]) , bulletProperties.speed, bullet.body.velocity);
+//             this.bulletInterval = game.time.now + bulletProperties.interval;
+//         }
+//     }
+//
+//     }
+// }
 
 
 const game = new Phaser.Game(1000, 600, Phaser.AUTO, 'gameDiv')
