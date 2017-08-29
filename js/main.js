@@ -1,6 +1,8 @@
+
 var total = 0
 var mob = []
 var weapon
+
 let gameState = {
 
   preload: function () {
@@ -30,26 +32,27 @@ let gameState = {
     this.bady.anchor.setTo(0.5, 0.5)
     game.physics.arcade.enable(this.bady)
 
-    // //fireBall
-    // this.fireBall = game.add.sprite(30, 'fireBall')
-    // // this kills the bullet when it leaves the bounds
-    // this.fireBall.bulletKillType = Phaser.This.FireBall.KILL_WORLD_BOUNDS
-    // this.fireBall.bulletSpeed = 600;
-    // this.fireBall.fireRate = 100;
-    // this.fireBall.trackSprite(this.player, 0, 0, true);
+    //fireBall
+    weapon = game.add.weapon(30, 'fireBall')
+    // this kills the bullet when it leaves the bounds
+    weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS
+    weapon.bulletSpeed = 600;
+    weapon.fireRate = 100;
+    weapon.trackSprite(this.player, 0, 0, true)
+
 
   },
 
   update: function () {
 
     //player movement
-    this.player.rotation = game.physics.arcade.angleToPointer(this.player) + 1.57079633
+    this.player.rotation = game.physics.arcade.angleToPointer(this.player)
     //bady movement
     if(this.player.x && this.player.y !== this.bady.x && this.bady.y){
        this.bady.rotation = game.physics.arcade.angleBetween(this.bady, this.player) + 1.57079633
        game.physics.arcade.moveToObject(this.bady, this.player, 100)
     }
-
+    //Mob movement
     for (let a = 0; a < mob.length; a++) {
       mob[a].anchor.setTo(0.5, 0.5)
       game.physics.arcade.enable(mob[a])
@@ -72,15 +75,16 @@ let gameState = {
       this.player.y += 4
     }
 
-    //bady spawner
-    if(total < 200 && game.time.now > timer){
-      badyCreation();
-    }
-
-    //shooting fireBall
-    // if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
-    //   this.fireBall.fire()
+    // //bady spawner
+    // if(total < 200 && game.time.now > timer){
+    //   badyCreation();
     // }
+
+    // shooting fireBall
+    if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
+      weapon.fire()
+    }
+    weapon.rotation = game.physics.arcade.angleToPointer(weapon)
 
   }
 }
@@ -93,31 +97,6 @@ function badyCreation(){
   timer = game.time.now + 100;
 
 }
-
-// fire:  function () {
-//     if (this.shipSprite.visible) {
-//
-//     if (game.time.now > this.bulletInterval) {
-//       this.sndFire.play();
-//
-//         var bullet = this.bulletGroup.getFirstExists(false);
-// 
-//         if (bullet) {
-//             var length = this.shipSprite.width * 0.9;
-//             var x = this.shipSprite.x + (Math.cos(this.shipSprite.rotation) * length);
-//             var y = this.shipSprite.y + (Math.sin(this.shipSprite.rotation) * length);
-//
-//             bullet.reset(x, y);
-//             bullet.lifespan = bulletProperties.lifeSpan;
-//             bullet.rotation = this.shipSprite.rotation;
-//
-//             game.physics.arcade.velocityFromRotation( (this.shipSprite.rotation + bulletProperties.scatter[Math.floor(Math.random()*bulletProperties.scatter.length)]) , bulletProperties.speed, bullet.body.velocity);
-//             this.bulletInterval = game.time.now + bulletProperties.interval;
-//         }
-//     }
-//
-//     }
-// }
 
 
 const game = new Phaser.Game(1000, 600, Phaser.AUTO, 'gameDiv')
