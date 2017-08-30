@@ -1,4 +1,5 @@
 var player
+var playerLife = 3
 var bady
 var el
 var mob
@@ -7,6 +8,7 @@ var bullets
 var total = 0
 var timer
 var bulletTime = 0
+var invincible = false
 
 let gameState = {
 
@@ -26,7 +28,7 @@ let gameState = {
     game.add.tileSprite(0, 0, 1500, 1500, 'background')
 
     //this is you
-    player = game.add.sprite(300, 300, 'player')
+    player = game.add.sprite(game.world.centerX, game.world.centerY, 'player')
     game.physics.arcade.enable(player)
     player.body.collideWorldBounds = true
     player.anchor.setTo(0.5, 0.5)
@@ -50,12 +52,9 @@ let gameState = {
     bullets.setAll('anchor.x', 0.5)
     bullets.setAll('anchor.y', 0.5)
 
-
-
   },
 
   update: function () {
-
     //player movement
     player.rotation = game.physics.arcade.angleToPointer(player)
 
@@ -69,12 +68,30 @@ let gameState = {
       bullets.forEach(function (bu){
         //this check to see if a bullet hit a bady
         game.physics.arcade.overlap(bu, el, badyDeath)
-        
+        if(invincible === false){
+          //this check to see if a bady hit the player
+          game.physics.arcade.overlap(player, el, wizDeath)
+        }
+        else {}
+
         function badyDeath (){
           el.kill()
           bu.kill()
         }
+        function wizDeath (){
 
+          playerLife -= 1
+          player.kill()
+          invincible = true
+
+          if(playerLife > 0){
+            player.reset(game.world.centerX, game.world.centerY)
+            game.time.events.add(2000, () => invincible = false)
+          }
+          else{
+            // game over, click to restart
+          }
+        }
       })
     })
 
@@ -93,7 +110,7 @@ let gameState = {
     }
 
     //bady spawner
-    if(total < 10 && game.time.now > timer){
+    if(total < 1000 && game.time.now > timer){
       badyCreation()
     }
 
@@ -129,12 +146,6 @@ function badyCreation(){
   total++
   timer = game.time.now + 100
 }
-
-// function badyDeath (){
-//   console.log('hit')
-//   el.kill(this)
-// }
-
 
 const game = new Phaser.Game(1000, 600, Phaser.AUTO, 'gameDiv')
 

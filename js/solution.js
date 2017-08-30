@@ -31,7 +31,7 @@ var shipProperties = {
 	drag: 85,
 	maxVelocity: 350,
 	angularVelocity: 325,
-	startingLives: 5,
+	startingLives: 5,	
 	timeToReset: 3,
 	blinkDelay: 0.2,
 };
