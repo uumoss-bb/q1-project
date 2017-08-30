@@ -1,9 +1,11 @@
 var player
+var bady
+var mob
+var bullet
+var bullets
 var total = 0
-var mob = []
-var bullet;
-var bullets;
-var bulletTime = 0;
+var timer
+var bulletTime = 0
 
 let gameState = {
 
@@ -29,27 +31,35 @@ let gameState = {
     player.anchor.setTo(0.5, 0.5)
     game.camera.follow(player)
 
-    badyCreation();
-    this.bady = game.add.sprite(game.world.randomX, game.world.randomY, 'bady')
-    this.bady.anchor.setTo(0.5, 0.5)
-    game.physics.arcade.enable(this.bady)
+    // badyCreation()
+    // this.bady = game.add.sprite(game.world.randomX, game.world.randomY, 'bady')
+    // this.bady.anchor.setTo(0.5, 0.5)
+    // game.physics.arcade.enable(this.bady)
 
     // //fireBall 1.0
     // weapon = game.add.weapon(30, 'fireBall')
     // // this kills the bullet when it leaves the bounds
     // weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS
-    // weapon.bulletSpeed = 600;
+    // weapon.bulletSpeed = 600
     // weapon.fireRate = 150
     // weapon.trackSprite(player, 0, 0, true)
 
-    bullets = game.add.group();
-    bullets.enableBody = true;
-    bullets.physicsBodyType = Phaser.Physics.ARCADE;
+    mob = game.add.group()
+    mob.enableBody = true
+    mob.physicsBodyType = Phaser.Physics.ARCADE
+
+    mob.setAll('anchor.x', 0.5)
+    mob.setAll('anchor.y', 0.5)
+    badyCreation()
+
+    bullets = game.add.group()
+    bullets.enableBody = true
+    bullets.physicsBodyType = Phaser.Physics.ARCADE
 
     //  All 40 of them
-    bullets.createMultiple(40, 'fireBall');
-    bullets.setAll('anchor.x', 0.5);
-    bullets.setAll('anchor.y', 0.5);
+    bullets.createMultiple(40, 'fireBall')
+    bullets.setAll('anchor.x', 0.5)
+    bullets.setAll('anchor.y', 0.5)
 
 
 
@@ -59,18 +69,15 @@ let gameState = {
 
     //player movement
     player.rotation = game.physics.arcade.angleToPointer(player)
-    //bady movement
-    if(player.x && player.y !== this.bady.x && this.bady.y){
-       this.bady.rotation = game.physics.arcade.angleBetween(this.bady, player) + 1.57079633
-       game.physics.arcade.moveToObject(this.bady, player, 100)
-    }
-    //Mob movement
-    for (let a = 0; a < mob.length; a++) {
-      mob[a].anchor.setTo(0.5, 0.5)
-      game.physics.arcade.enable(mob[a])
-      mob[a].rotation = game.physics.arcade.angleBetween(mob[a], player) + 1.57079633
-      game.physics.arcade.moveToObject(mob[a], player, 100)
-    }
+
+    mob.forEach(function(el){
+      if(player.x && player.y !== el.x && el.y){
+        el.rotation = game.physics.arcade.angleBetween(el, player) + 1.57079633
+        game.physics.arcade.moveToObject(el, player, 100)
+        el.anchor.setTo(.5,.5)
+        game.physics.arcade.enable(el)
+      }
+    })
 
     //player controls
     if(game.input.keyboard.isDown(Phaser.Keyboard.A)){
@@ -88,53 +95,54 @@ let gameState = {
 
     //bady spawner
     if(total < 200 && game.time.now > timer){
-      badyCreation();
-
+      badyCreation()
+      //bady movement
     }
 
     // shooting fireBall
     if(game.input.activePointer.isDown){
       fireBullet()
+
     }
-    //fireBall hits bady?
-    if(bullet.x && bullet.y === this.bady.x && this.bady.y){
-      badyDeath()
-    }
+    // //fireBall hits bady?
+    // if(bullet.x && bullet.y === this.bady.x && this.bady.y){
+    //   badyDeath()
+    // }
 
   }
 }
 
 
 function badyCreation(){
-  this.bady = game.add.sprite(game.world.randomX, game.world.randomY, 'bady')
-  mob.unshift(this.bady)
+  bady = game.add.sprite(game.world.randomX, game.world.randomY, 'bady')
+  mob.add(bady)
 
-  total++;
-  timer = game.time.now + 100;
-
+  total++
+  timer = game.time.now + 100
 }
-function badyDeath (){
 
-  console.log('hit')
-}
+// function badyDeath (){
+//
+//   console.log('hit')
+// }
 
 function fireBullet () {
 
     if (game.time.now > bulletTime)
     {
-        bullet = bullets.getFirstExists(false);
+        bullet = bullets.getFirstExists(false)
 
         if (bullet)
         {
-            bullet.reset(player.x + 16, player.y + 16);
-            bullet.lifespan = 2000;
-            bullet.rotation = player.rotation;
-            game.physics.arcade.velocityFromRotation(player.rotation, 400, bullet.body.velocity);
-            bulletTime = game.time.now + 50;
+            bullet.reset(player.x + 16, player.y + 16)
+            bullet.lifespan = 2000
+            bullet.rotation = player.rotation
+            game.physics.arcade.velocityFromRotation(player.rotation, 400, bullet.body.velocity)
+            bulletTime = game.time.now + 120
         }
     }
-
 }
+
 
 
 const game = new Phaser.Game(1000, 600, Phaser.AUTO, 'gameDiv')
