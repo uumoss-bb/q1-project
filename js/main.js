@@ -59,21 +59,23 @@ let gameState = {
     //player movement
     player.rotation = game.physics.arcade.angleToPointer(player)
 
-    //bady movement
     mob.forEach(function(el){
+      //bady movement
       el.anchor.setTo(.5,.5)
       game.physics.arcade.enable(el)
       el.rotation = game.physics.arcade.angleBetween(el, player) + 1.57079633
       game.physics.arcade.moveToObject(el, player, 100)
 
-      game.physics.arcade.overlap(bullet, el, badyDeath)
-      // //fireBall hits bady?
-      // if(theIF === true){
-      //   if(el.x && el.y === bullet.x && bullet.y){
-      //     badyDeath()
-      //   game.physics.arcade.overlap(bullet, el, badyDeath)
-      //   }
-      // }
+      bullets.forEach(function (bu){
+        //this check to see if a bullet hit a bady
+        game.physics.arcade.overlap(bu, el, badyDeath)
+        
+        function badyDeath (){
+          el.kill()
+          bu.kill()
+        }
+
+      })
     })
 
     //player controls
@@ -128,15 +130,10 @@ function badyCreation(){
   timer = game.time.now + 100
 }
 
-function badyDeath (){
-  mob.forEach( function (el,index) {
-    console.log(el.x + ' and ' + el.y)
-    if(el.x && el.y === bullet.x && bullet.y){
-      console.log('hii')
-      el.kill()
-    }
-  })
-}
+// function badyDeath (){
+//   console.log('hit')
+//   el.kill(this)
+// }
 
 
 const game = new Phaser.Game(1000, 600, Phaser.AUTO, 'gameDiv')
