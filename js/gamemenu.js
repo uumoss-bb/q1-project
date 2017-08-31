@@ -1,4 +1,4 @@
-var button
+
 var gameMenu = {
 
   preload: function () {
@@ -14,7 +14,11 @@ var gameMenu = {
     gameTite.anchor.setTo(0.5, 0.5)
     gameTite.setShadow(3, 3, 'rgba(0,0,0,0.3)', 5)
 
-    button = game.add.button(500, 400, 'playBtn', actionOnClick, this, 2, 1, 0)
+    var infoText = game.add.text(500, 580, 'created by the Master Wiz (Brodie Balser)', {font: '20px Palatino', fill: "#8F3359"})
+    infoText.anchor.setTo(0.5, 0.5)
+    infoText.setShadow(3, 3, 'rgba(0,0,0,0.3)', 5)
+
+    var button = game.add.button(500, 400, 'playBtn', actionOnClick, this, 2, 1, 0)
     button.anchor.setTo(0.5, 0.5)
     button.setShadow(3, 3, 'rgba(0,0,0,0.3)', 5)
 
