@@ -64,12 +64,17 @@ let gameState = {
 
     //score text
     killString = 'Deamons Slain : '
-    scoreText = game.add.text(10, 10, killString + kills, {font: '34px Arial', fill: "#fff"})
+    scoreText = game.add.text(10, 10, killString + kills, {font: '34px Helvetica', fill: "#212329"})
     scoreText.fixedToCamera = true
     //lives text
     livesString = 'Lives : '
-    lifeText = game.add.text(10, 50, livesString + playerLife, {font: '34px Arial', fill: "#fff"})
+    lifeText = game.add.text(10, 50, livesString + playerLife, {font: '34px Helvetica', fill: "#212329"})
     lifeText.fixedToCamera = true
+    //end game text
+    endGameText = game.add.text(500, 300,' GAME OVER\nClick to Restart', { font: '84px Helvetica', fill: '#212329' });
+    endGameText.anchor.setTo(0.5, 0.5);
+    endGameText.visible = false;
+    endGameText.fixedToCamera = true
 
   },
 
@@ -118,10 +123,16 @@ let gameState = {
           else if(playerLife === 0){
             lifeText.text = 'YOU ARE DEAD' // update life text
             // game over, click to restart
+            endGameText.visible = true;
+            lifeText.text = livesString + playerLife // update life text
+            scoreText.text = killString + kills // update score board
+
+            //the "click to restart" handler
+            game.input.onTap.addOnce(restart,this);
+            }
           }
-        }
+        })
       })
-    })
 
     //player controls
     if(game.input.keyboard.isDown(Phaser.Keyboard.A)){
@@ -138,7 +149,7 @@ let gameState = {
     }
 
     //baddie spawner
-    if(total < 20 && game.time.now > timer){
+    if(total < 200 && game.time.now > timer){
       baddieCreation()
     }
 
@@ -152,19 +163,17 @@ let gameState = {
 
 function fireBullet () {
 
-    if (game.time.now > bulletTime)
-    {
-        bullet = bullets.getFirstExists(false)
+    if (game.time.now > bulletTime){
+      bullet = bullets.getFirstExists(false)
 
-        if (bullet)
-        {
-            bullet.reset(player.x + 16, player.y + 16)
-            bullet.lifespan = 2000
-            bullet.rotation = player.rotation
-            game.physics.arcade.velocityFromRotation(player.rotation, 400, bullet.body.velocity)
-            bulletTime = game.time.now + 120
-        }
+      if (bullet){
+        bullet.reset(player.x + 16, player.y + 16)
+        bullet.lifespan = 2000
+        bullet.rotation = player.rotation
+        game.physics.arcade.velocityFromRotation(player.rotation, 400, bullet.body.velocity)
+        bulletTime = game.time.now + 120
     }
+  }
 }
 
 function baddieCreation(){
@@ -172,6 +181,25 @@ function baddieCreation(){
 
   total++
   timer = game.time.now + 100
+}
+function restart () {
+
+  //  A new level starts
+
+  //  And brings the aliens back from the dead :)
+  mob.removeAll()
+  baddieCreation()
+
+  //revives the player
+  player.reset(game.world.centerX, game.world.centerY)
+
+  //resets the life count
+  playerLife -= playerLife
+  kills += 3
+
+  //hides the text
+  endGameText.visible = false
+
 }
 
 const game = new Phaser.Game(1000, 600, Phaser.AUTO, 'gameDiv')
