@@ -1,5 +1,5 @@
 var player
-var playerLife = 3
+var playerLife = 1
 var livesString
 var lifetext
 var invincible = false
@@ -71,7 +71,7 @@ let gameState = {
     lifeText = game.add.text(10, 50, livesString + playerLife, {font: '34px Helvetica', fill: "#212329"})
     lifeText.fixedToCamera = true
     //end game text
-    endGameText = game.add.text(500, 300,' GAME OVER\nClick to Restart', { font: '84px Helvetica', fill: '#212329' });
+    endGameText = game.add.text(500, 300,`  GAME OVER\nClick to Restart`, { font: '84px Helvetica', fill: '#212329' });
     endGameText.anchor.setTo(0.5, 0.5);
     endGameText.visible = false;
     endGameText.fixedToCamera = true
@@ -99,37 +99,12 @@ let gameState = {
         }
         else {}
 
-        function baddieDeath (){
-          // after the baddie gets hit with a bullet
-          el.kill() //the baddie dies
-          bu.kill() //the bullet dies
-          kills++ //the score goes up
-          scoreText.text = killString + kills // update score board
-        }
-        function wizDeath (){
-
-          player.kill()
-          invincible = true
-          playerLife-- //the live goes down
-          lifeText.text = livesString + playerLife // update life text
-          scoreText.text = killString + kills // update score board
-
-          if(playerLife > 0){
-            //this resets the player
-            player.reset(game.world.centerX, game.world.centerY)
-            //this keeps you in invincible mode for 2000 units of time
-            game.time.events.add(2000, () => invincible = false)
-          }
-          else if(playerLife === 0){
-            lifeText.text = 'YOU ARE DEAD' // update life text
-            // game over, click to restart
-            endGameText.visible = true;
-            lifeText.text = livesString + playerLife // update life text
+          function baddieDeath (){
+            // after the baddie gets hit with a bullet
+            el.kill() //the baddie dies
+            bu.kill() //the bullet dies
+            kills++ //the score goes up
             scoreText.text = killString + kills // update score board
-
-            //the "click to restart" handler
-            game.input.onTap.addOnce(restart,this);
-            }
           }
         })
       })
@@ -182,25 +157,79 @@ function baddieCreation(){
   total++
   timer = game.time.now + 100
 }
-function restart () {
+function wizDeath (){
 
-  //  A new level starts
+  player.kill()
+  invincible = true
+  playerLife-- //the live goes down
+  lifeText.text = livesString + playerLife // update life text
+  scoreText.text = killString + kills // update score board
 
-  //  And brings the aliens back from the dead :)
-  mob.removeAll()
-  baddieCreation()
+  if(playerLife > 0){
+    //this resets the player
+    player.reset(game.world.centerX, game.world.centerY)
+    //this keeps you in invincible mode for 2000 units of time
+    game.time.events.add(2000, () => invincible = false)
+  }
+  else if(playerLife === 0){
 
-  //revives the player
-  player.reset(game.world.centerX, game.world.centerY)
+    // game over, click to restart
+    endGameText.visible = true;
 
-  //resets the life count
-  playerLife -= playerLife
-  kills += 3
+    lifeText.text = ' ' // update life text
+    scoreText.text = ' ' // update score board
 
-  //hides the text
-  endGameText.visible = false
+    lifeText.text = livesString + playerLife // update life text
+    scoreText.text = killString + kills // update score board
 
-}
+    //the "click to restart" handler
+    game.input.onTap.addOnce(restart,this);
+
+      function restart () { //this has to be here because of the playerLife and kills
+
+        //  A new level starts
+
+        //  baddie reset
+        mob.removeAll()
+
+        //revives the player
+        player.reset(game.world.centerX, game.world.centerY)
+
+        //resets the life count
+        playerLife += 3
+        kills *= 0
+        lifeText.text = livesString + playerLife // update life text
+        scoreText.text = killString + kills // update score board
+
+        invincible = false
+
+        //hides the text
+        endGameText.visible = false
+
+      }
+    }
+  }
+// function restart () {
+//
+//   //  A new level starts
+//
+//   //  baddie reset
+//   mob.removeAll()
+//   baddieCreation()
+//
+//   //revives the player
+//   player.reset(game.world.centerX, game.world.centerY)
+//
+//   //resets the life count
+//   playerLife = 0
+//   kills = 3
+//   lifeText.text = livesString + playerLife // update life text
+//   scoreText.text = killString + kills // update score board
+//
+//   //hides the text
+//   endGameText.visible = false
+//
+// }
 
 const game = new Phaser.Game(1000, 600, Phaser.AUTO, 'gameDiv')
 
