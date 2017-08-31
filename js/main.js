@@ -1,3 +1,4 @@
+
 var player
 var playerLife = 3
 var livesString
@@ -7,9 +8,14 @@ var invincible = false
 var baddie
 var el
 var mob
+var baddieX = 0
+var baddieY = 0
 
 var total = 0
 var timer
+var maxBaddies = 20
+var waves = 1
+var waveText
 
 var bullet
 var bullets
@@ -19,7 +25,7 @@ var kills = 0
 var killString
 var scoreText
 
-let gameState = {
+var gameState = {
 
   preload: function () {
     //my assets
@@ -76,6 +82,11 @@ let gameState = {
     endGameText.visible = false;
     endGameText.fixedToCamera = true
 
+    //waves show
+    waveText = game.add.text(500, 300, 'Wave:' + waves, { font: '84px Helvetica', fill: '#212329' })
+    waveText.anchor.setTo(0.5, 0.5);
+    waveText.visible = false;
+    waveText.fixedToCamera = true
   },
 
   update: function () {
@@ -93,6 +104,7 @@ let gameState = {
       bullets.forEach(function (bu){
         //this check to see if a bullet hit a baddie
         game.physics.arcade.overlap(bu, el, baddieDeath) //check if baddie gets hit
+
         if(invincible === false){
           //this check to see if a baddie hit the player
           game.physics.arcade.overlap(player, el, wizDeath) //check if baddie hits player
@@ -123,18 +135,28 @@ let gameState = {
       player.y += 4
     }
 
-    //baddie spawner
-    if(total < 200 && game.time.now > timer){
-      baddieCreation()
-    }
-
     // shooting fireBall
     if(game.input.activePointer.isDown){
       fireBullet()
     }
 
+    waveText.visible = true
+    game.time.events.add(1500, fade, this)
+    // this spawns bad guys
+    game.time.events.add(2000, baddieSpawner)
+
+    if(total === maxBaddies){
+      waves++
+      waveText.visible = true
+      game.time.events.add(1500, fade, this)
+      game.time.events.add(2000, () => {
+        total *= 0
+        maxBaddies *= 2
+      })
+    }
+
+    }
   }
-}
 
 function fireBullet () {
 
@@ -151,12 +173,34 @@ function fireBullet () {
   }
 }
 
-function baddieCreation(){
-  mob.add(game.add.sprite(game.world.randomX, game.world.randomY, 'baddie'))
+function baddieCreation(x, y){
+  mob.add(game.add.sprite(x, y, 'baddie'))
 
   total++
   timer = game.time.now + 100
 }
+
+function baddieSpawner () {
+
+  if(total < maxBaddies && game.time.now > timer) {
+    spawnBufferDist = 40;
+
+    var rndX = Math.floor(Math.random() * (1000 - 1 + 1)) // [1-1000]
+    var rndY = Math.floor(Math.random() * (1000 - 1 + 1)) // [1-600]
+
+    if (
+        (rndX < player.x - spawnBufferDist || rndX > player.x + spawnBufferDist) &&
+        (rndY < player.y - spawnBufferDist || rndY > player.y + spawnBufferDist)
+       ) {
+      // random coords are in bounds
+      baddieCreation(rndX, rndY)
+    }
+    else {
+      baddieSpawner()
+    }
+  }
+}
+
 function wizDeath (){
 
   player.kill()
@@ -212,25 +256,6 @@ function wizDeath (){
     }
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-bs
+function fade (){
+  game.add.tween(waveText).to( { alpha: 0 }, 100, Phaser.Easing.Linear.None, true);
+}

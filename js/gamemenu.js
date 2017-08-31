@@ -20,7 +20,6 @@ var gameMenu = {
 
     var button = game.add.button(500, 400, 'playBtn', actionOnClick, this, 2, 1, 0)
     button.anchor.setTo(0.5, 0.5)
-    button.setShadow(3, 3, 'rgba(0,0,0,0.3)', 5)
 
   }
 }
