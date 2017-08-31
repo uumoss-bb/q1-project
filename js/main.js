@@ -1,5 +1,5 @@
 var player
-var playerLife = 1
+var playerLife = 3
 var livesString
 var lifetext
 var invincible = false
@@ -27,7 +27,7 @@ let gameState = {
     this.load.image('player', 'assets/people/wiz_0.1.png')
     this.load.image('baddie', 'assets/people/bady_0.1.png')
     this.load.image('fireBall', 'assets/fireBall.png')
-    this.load.image('fireDrag', 'assets/fireDrag.png')
+    this.load.image('playBtn', 'assets/play_btn.png')
   },
 
   create: function () {
@@ -48,7 +48,6 @@ let gameState = {
     mob = game.add.group()
     mob.enableBody = true
     mob.physicsBodyType = Phaser.Physics.ARCADE
-
     baddieCreation()
     mob.setAll('anchor.x', 0.5)
     mob.setAll('anchor.y', 0.5)
@@ -57,8 +56,7 @@ let gameState = {
     bullets = game.add.group()
     bullets.enableBody = true
     bullets.physicsBodyType = Phaser.Physics.ARCADE
-
-    bullets.createMultiple(40, 'fireDrag')
+    bullets.createMultiple(40, 'fireBall')
     bullets.setAll('anchor.x', 0.5)
     bullets.setAll('anchor.y', 0.5)
 
@@ -66,10 +64,12 @@ let gameState = {
     killString = 'Deamons Slain : '
     scoreText = game.add.text(10, 10, killString + kills, {font: '34px Helvetica', fill: "#212329"})
     scoreText.fixedToCamera = true
+
     //lives text
     livesString = 'Lives : '
     lifeText = game.add.text(10, 50, livesString + playerLife, {font: '34px Helvetica', fill: "#212329"})
     lifeText.fixedToCamera = true
+
     //end game text
     endGameText = game.add.text(500, 300,`  GAME OVER\nClick to Restart`, { font: '84px Helvetica', fill: '#212329' });
     endGameText.anchor.setTo(0.5, 0.5);
@@ -182,59 +182,35 @@ function wizDeath (){
     lifeText.text = livesString + playerLife // update life text
     scoreText.text = killString + kills // update score board
 
-    //the "click to restart" handler
+    //click to restart
     game.input.onTap.addOnce(restart,this);
 
-      function restart () { //this has to be here because of the playerLife and kills
+    function restart () { //this has to be here because of the playerLife and kills
 
-        //  A new level starts
+      //  A new level starts
 
-        //  baddie reset
-        mob.removeAll()
+      //  baddie reset
+      mob.removeAll()
+      baddieCreation()
 
-        //revives the player
-        player.reset(game.world.centerX, game.world.centerY)
+      //revives the player
+      player.reset(game.world.centerX, game.world.centerY)
 
-        //resets the life count
-        playerLife += 3
-        kills *= 0
-        lifeText.text = livesString + playerLife // update life text
-        scoreText.text = killString + kills // update score board
+      //resets the life count
+      playerLife += 3
+      kills *= 0
+      total *= 0
+      lifeText.text = livesString + playerLife // update life text
+      scoreText.text = killString + kills // update score board
 
-        invincible = false
+      invincible = false
 
-        //hides the text
-        endGameText.visible = false
+      //hides the text
+      endGameText.visible = false
 
-      }
+    }
     }
   }
-// function restart () {
-//
-//   //  A new level starts
-//
-//   //  baddie reset
-//   mob.removeAll()
-//   baddieCreation()
-//
-//   //revives the player
-//   player.reset(game.world.centerX, game.world.centerY)
-//
-//   //resets the life count
-//   playerLife = 0
-//   kills = 3
-//   lifeText.text = livesString + playerLife // update life text
-//   scoreText.text = killString + kills // update score board
-//
-//   //hides the text
-//   endGameText.visible = false
-//
-// }
-
-const game = new Phaser.Game(1000, 600, Phaser.AUTO, 'gameDiv')
-
-game.state.add('gameState', gameState)
-game.state.start('gameState')
 
 
 
