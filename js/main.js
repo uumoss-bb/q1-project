@@ -140,7 +140,7 @@ var gameState = {
 
     // shooting fireBall
     if(game.input.activePointer.isDown && wave < 5){
-      fireBullet2()
+      fireBullet()
     }
     else if(game.input.activePointer.isDown && wave >= 5){
       fireBullet2()
@@ -155,6 +155,10 @@ var gameState = {
       waveText.text = "Wave: " + wave
       maxBaddies *= 2
       total = 0
+      if(wave >= 4){
+        playerLife++
+        lifeText.text = livesString + playerLife // update life text
+      }
     }
     else{}
 
@@ -177,7 +181,7 @@ function fireBullet () {
 }
 
 function fireBullet2 () {
-powers -bullets.createMultiple(1, 'iceShard')
+
     if (game.time.now > bulletTime){
       // bullet = bullets.getFirstExists(false)
       for (var i = 0; i < 3; i++) {
