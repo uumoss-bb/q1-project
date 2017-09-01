@@ -13,8 +13,8 @@ var baddieY = 0
 
 var total = 0
 var timer
-var maxBaddies = 20
-var waves = 1
+var maxBaddies = 5
+var wave = 1
 var waveText
 
 var bullet
@@ -82,8 +82,8 @@ var gameState = {
     endGameText.visible = false;
     endGameText.fixedToCamera = true
 
-    //waves show
-    waveText = game.add.text(500, 300, 'Wave:' + waves, { font: '84px Helvetica', fill: '#212329' })
+    //wave show
+    waveText = game.add.text(500, 300, 'Wave:' + wave, { font: '84px Helvetica', fill: '#212329' })
     waveText.anchor.setTo(0.5, 0.5);
     waveText.visible = false;
     waveText.fixedToCamera = true
@@ -140,19 +140,14 @@ var gameState = {
       fireBullet()
     }
 
+    //this is a initial wave text display
     waveText.visible = true
-    game.time.events.add(1500, fade, this)
+    game.time.events.add(1500, fadeOut)
     // this spawns bad guys
     game.time.events.add(2000, baddieSpawner)
 
-    if(total === maxBaddies){
-      waves++
-      waveText.visible = true
-      game.time.events.add(1500, fade, this)
-      game.time.events.add(2000, () => {
-        total *= 0
-        maxBaddies *= 2
-      })
+    if(kills === maxBaddies){
+      nextWave()
     }
 
     }
@@ -173,17 +168,17 @@ function fireBullet () {
   }
 }
 
-function baddieCreation(x, y){
+function baddieCreation(x, y) {
   mob.add(game.add.sprite(x, y, 'baddie'))
 
   total++
-  timer = game.time.now + 100
+  timer = game.time.now + 500
 }
 
 function baddieSpawner () {
 
   if(total < maxBaddies && game.time.now > timer) {
-    spawnBufferDist = 40;
+    var spawnBufferDist = 40;
 
     var rndX = Math.floor(Math.random() * (1000 - 1 + 1)) // [1-1000]
     var rndY = Math.floor(Math.random() * (1000 - 1 + 1)) // [1-600]
@@ -201,7 +196,19 @@ function baddieSpawner () {
   }
 }
 
-function wizDeath (){
+function nextWave (){
+  wave += 1
+  maxBaddies *= 2
+  total = 0
+  console.log('wave' + wave)
+  game.time.events.add(10, fadeIn, this)
+  game.time.events.add(1500, fadeOut, this)
+  game.time.events.add(2000, baddieSpawner)
+  console.log('total' + total)
+  console.log(maxBaddies)
+}
+
+function wizDeath () {
 
   player.kill()
   invincible = true
@@ -256,6 +263,10 @@ function wizDeath (){
     }
   }
 
-function fade (){
-  game.add.tween(waveText).to( { alpha: 0 }, 100, Phaser.Easing.Linear.None, true);
+function fadeOut () {
+   game.add.tween(waveText).to( { alpha: 0 }, 100, Phaser.Easing.Linear.None, true)
+}
+
+function fadeIn () {
+  game.add.tween(waveText).to( { alpha: 1 }, 1000, Phaser.Easing.Linear.None, true, 0, 1000, true)
 }
