@@ -33,6 +33,7 @@ var gameState = {
     this.load.image('player', 'assets/people/wiz_0.1.png')
     this.load.image('baddie', 'assets/people/bady_0.1.png')
     this.load.image('fireBall', 'assets/fireBall.png')
+    this.load.image('iceShard', 'assets/ice_shard.png')
     this.load.image('playBtn', 'assets/play_btn.png')
   },
 
@@ -139,7 +140,7 @@ var gameState = {
 
     // shooting fireBall
     if(game.input.activePointer.isDown && wave < 5){
-      fireBullet()
+      fireBullet2()
     }
     else if(game.input.activePointer.isDown && wave >= 5){
       fireBullet2()
@@ -176,7 +177,7 @@ function fireBullet () {
 }
 
 function fireBullet2 () {
-
+powers -bullets.createMultiple(1, 'iceShard')
     if (game.time.now > bulletTime){
       // bullet = bullets.getFirstExists(false)
       for (var i = 0; i < 3; i++) {
@@ -194,6 +195,15 @@ function fireBullet2 () {
           bulletTime = game.time.now + 350
       }
     }
+  }
+}
+//this is not working :(
+function bulletPicker () {
+  if(wave < 2){
+    bullets.createMultiple(1, 'fireBall')
+  }
+  else if(wave >= 2){
+    bullets.createMultiple(1, 'iceShard')
   }
 }
 
