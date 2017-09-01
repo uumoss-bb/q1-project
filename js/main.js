@@ -85,9 +85,9 @@ var gameState = {
     endGameText.fixedToCamera = true
 
     //wave show
-    waveText = game.add.text(500, 300, 'Wave:' + wave, { font: '84px Helvetica', fill: '#212329' })
+    waveText = game.add.text(900, 30, 'Wave:' + wave, { font: '34px Helvetica', fill: '#212329' })
     waveText.anchor.setTo(0.5, 0.5);
-    waveText.visible = false;
+    waveText.visible = true
     waveText.fixedToCamera = true
 
   },
@@ -144,18 +144,15 @@ var gameState = {
       fireBullet()
     }
 
-    //this is a initial wave text display
-    waveText.visible = true
-    game.time.events.add(1500, fadeOut)
     // this spawns bad guys
     game.time.events.add(2000, baddieSpawner)
 
     // this pushes you to the nextWave
     if(total > 0 && mob.length === 0) {//these two hold these values for too long
-      fadeIn()
-      game.time.events.add(1500, fadeOut)
-      game.time.events.add(2000, nextWave)//I must find something that changes values imidiatly
-      console.log(`max ${maxBaddies}`)
+      wave++
+      waveText.text = "Wave: " + wave
+      maxBaddies *= 2
+      total = 0
     }
     else{}
 
@@ -205,15 +202,6 @@ function baddieSpawner () {
   }
 }
 
-function nextWave (){
-  wave += 1
-  maxBaddies *= 2
-  total = 0
-  if(total === 0){
-    total++
-  }
-}
-
 function wizDeath () {
 
   player.kill()
@@ -257,6 +245,9 @@ function wizDeath () {
       playerLife += 3
       kills *= 0
       total *= 0
+      wave = 1
+      waveText.text = 'Wave: ' + wave
+      maxBaddies = 20
       lifeText.text = livesString + playerLife // update life text
       scoreText.text = killString + kills // update score board
 
@@ -271,8 +262,4 @@ function wizDeath () {
 
 function fadeOut () {
    game.add.tween(waveText).to( { alpha: 0 }, 100, Phaser.Easing.Linear.None, true)
-}
-
-function fadeIn () {
-  game.add.tween(waveText).to( { alpha: 1 }, 100, Phaser.Easing.Linear.None, true,)
 }

@@ -14,7 +14,7 @@ var gameMenu = {
     gameTite.anchor.setTo(0.5, 0.5)
     gameTite.setShadow(3, 3, 'rgba(0,0,0,0.3)', 5)
 
-    var infoText = game.add.text(500, 580, 'created by the Master Wiz (Brodie Balser)', {font: '20px Palatino', fill: "#8F3359"})
+    var infoText = game.add.text(500, 520, 'W,A,S,D to move - Left click to shoot - Use pointer to aim', {font: '30px Palatino', fill: "#8F3359"})
     infoText.anchor.setTo(0.5, 0.5)
     infoText.setShadow(3, 3, 'rgba(0,0,0,0.3)', 5)
 
