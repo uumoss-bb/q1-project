@@ -116,7 +116,6 @@ var gameState = {
           function baddieDeath (){
             // after the baddie gets hit with a bullet
             mob.remove(el) //the baddie dies
-            console.log(`kills ${kills}`, `mob ${mob.length}`)
             bu.kill() //the bullet dies
             kills++ //the score goes up
             scoreText.text = killString + kills // update score board
@@ -139,8 +138,11 @@ var gameState = {
     }
 
     // shooting fireBall
-    if(game.input.activePointer.isDown){
+    if(game.input.activePointer.isDown && wave < 5){
       fireBullet()
+    }
+    else if(game.input.activePointer.isDown && wave >= 5){
+      fireBullet2()
     }
 
     // this spawns bad guys after 2000 units of time
@@ -164,11 +166,33 @@ function fireBullet () {
       bullet = bullets.getFirstExists(false)
 
       if (bullet){
-        bullet.reset(player.x + 16, player.y + 16)
+        bullet.reset(player.x + 10, player.y + 10)
         bullet.lifespan = 1000
         bullet.rotation = player.rotation
         game.physics.arcade.velocityFromRotation(player.rotation, 400, bullet.body.velocity)
-        bulletTime = game.time.now + 180
+        bulletTime = game.time.now + 200
+    }
+  }
+}
+
+function fireBullet2 () {
+
+    if (game.time.now > bulletTime){
+      // bullet = bullets.getFirstExists(false)
+      for (var i = 0; i < 3; i++) {
+        var bullet = bullets.getFirstExists(false);
+        if (bullet){
+          var bulletOffset = 20 * Math.sin(game.math.degToRad(player.rotation))
+          var spreadAngle;
+          if (i === 0) spreadAngle = -50;
+          if (i === 1) spreadAngle = 0;
+          if (i === 2) spreadAngle = 50;
+          bullet.reset(player.x + bulletOffset, player.y )
+          bullet.lifespan = 1000
+          bullet.rotation = player.rotation
+          game.physics.arcade.velocityFromRotation(player.rotation + spreadAngle, 400, bullet.body.velocity)
+          bulletTime = game.time.now + 350
+      }
     }
   }
 }
