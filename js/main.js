@@ -5,8 +5,6 @@ var livesString
 var lifetext
 var invincible = false
 
-var blah = false
-
 var baddie
 var el
 var mob
@@ -103,6 +101,7 @@ var gameState = {
       game.physics.arcade.enable(el)
       el.rotation = game.physics.arcade.angleBetween(el, player) + 1.57079633
       game.physics.arcade.moveToObject(el, player, 130)
+      game.physics.arcade.collide(el, mob)
 
       bullets.forEach(function (bu){
         //this check to see if a bullet hit a baddie
@@ -144,11 +143,11 @@ var gameState = {
       fireBullet()
     }
 
-    // this spawns bad guys
+    // this spawns bad guys after 2000 units of time
     game.time.events.add(2000, baddieSpawner)
 
     // this pushes you to the nextWave
-    if(total > 0 && mob.length === 0) {//these two hold these values for too long
+    if(total > 0 && mob.length === 0) {
       wave++
       waveText.text = "Wave: " + wave
       maxBaddies *= 2
@@ -259,7 +258,3 @@ function wizDeath () {
     }
     }
   }
-
-function fadeOut () {
-   game.add.tween(waveText).to( { alpha: 0 }, 100, Phaser.Easing.Linear.None, true)
-}
