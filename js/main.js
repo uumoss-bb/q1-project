@@ -5,6 +5,8 @@ var livesString
 var lifetext
 var invincible = false
 
+var blah = false
+
 var baddie
 var el
 var mob
@@ -13,7 +15,7 @@ var baddieY = 0
 
 var total = 0
 var timer
-var maxBaddies = 5
+var maxBaddies = 20
 var wave = 1
 var waveText
 
@@ -87,6 +89,7 @@ var gameState = {
     waveText.anchor.setTo(0.5, 0.5);
     waveText.visible = false;
     waveText.fixedToCamera = true
+
   },
 
   update: function () {
@@ -99,7 +102,7 @@ var gameState = {
       el.anchor.setTo(.5,.5)
       game.physics.arcade.enable(el)
       el.rotation = game.physics.arcade.angleBetween(el, player) + 1.57079633
-      game.physics.arcade.moveToObject(el, player, 100)
+      game.physics.arcade.moveToObject(el, player, 130)
 
       bullets.forEach(function (bu){
         //this check to see if a bullet hit a baddie
@@ -113,7 +116,8 @@ var gameState = {
 
           function baddieDeath (){
             // after the baddie gets hit with a bullet
-            el.kill() //the baddie dies
+            mob.remove(el) //the baddie dies
+            console.log(`kills ${kills}`, `mob ${mob.length}`)
             bu.kill() //the bullet dies
             kills++ //the score goes up
             scoreText.text = killString + kills // update score board
@@ -146,9 +150,14 @@ var gameState = {
     // this spawns bad guys
     game.time.events.add(2000, baddieSpawner)
 
-    if(kills === maxBaddies){
-      nextWave()
+    // this pushes you to the nextWave
+    if(total > 0 && mob.length === 0) {//these two hold these values for too long
+      fadeIn()
+      game.time.events.add(1500, fadeOut)
+      game.time.events.add(2000, nextWave)//I must find something that changes values imidiatly
+      console.log(`max ${maxBaddies}`)
     }
+    else{}
 
     }
   }
@@ -160,10 +169,10 @@ function fireBullet () {
 
       if (bullet){
         bullet.reset(player.x + 16, player.y + 16)
-        bullet.lifespan = 2000
+        bullet.lifespan = 1000
         bullet.rotation = player.rotation
         game.physics.arcade.velocityFromRotation(player.rotation, 400, bullet.body.velocity)
-        bulletTime = game.time.now + 120
+        bulletTime = game.time.now + 180
     }
   }
 }
@@ -172,7 +181,7 @@ function baddieCreation(x, y) {
   mob.add(game.add.sprite(x, y, 'baddie'))
 
   total++
-  timer = game.time.now + 500
+  timer = game.time.now + 50
 }
 
 function baddieSpawner () {
@@ -200,12 +209,9 @@ function nextWave (){
   wave += 1
   maxBaddies *= 2
   total = 0
-  console.log('wave' + wave)
-  game.time.events.add(10, fadeIn, this)
-  game.time.events.add(1500, fadeOut, this)
-  game.time.events.add(2000, baddieSpawner)
-  console.log('total' + total)
-  console.log(maxBaddies)
+  if(total === 0){
+    total++
+  }
 }
 
 function wizDeath () {
@@ -268,5 +274,5 @@ function fadeOut () {
 }
 
 function fadeIn () {
-  game.add.tween(waveText).to( { alpha: 1 }, 1000, Phaser.Easing.Linear.None, true, 0, 1000, true)
+  game.add.tween(waveText).to( { alpha: 1 }, 100, Phaser.Easing.Linear.None, true,)
 }
