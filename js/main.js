@@ -201,6 +201,7 @@ function fireBullet2 () {
     }
   }
 }
+
 //this is not working :(
 function bulletPicker () {
   if(wave < 2){
@@ -245,54 +246,48 @@ function wizDeath () {
   invincible = true
   playerLife-- //the live goes down
   lifeText.text = livesString + playerLife // update life text
-  scoreText.text = killString + kills // update score board
 
   if(playerLife > 0){
     //this resets the player
-    player.reset(game.world.centerX, game.world.centerY)
+    player.reset(game.world.randomX, game.world.randomY)
     //this keeps you in invincible mode for 2000 units of time
     game.time.events.add(2000, () => invincible = false)
   }
-  else if(playerLife === 0){
+  else if(playerLife === 0) {
 
     // game over, click to restart
     endGameText.visible = true;
 
-    lifeText.text = ' ' // update life text
-    scoreText.text = ' ' // update score board
-
-    lifeText.text = livesString + playerLife // update life text
-    scoreText.text = killString + kills // update score board
-
     //click to restart
     game.input.onTap.addOnce(restart,this);
 
-    function restart () { //this has to be here because of the playerLife and kills
 
-      //  A new level starts
-
-      //  baddie reset
-      mob.removeAll()
-      baddieCreation()
-
-      //revives the player
-      player.reset(game.world.centerX, game.world.centerY)
-
-      //resets the life count
-      playerLife += 3
-      kills *= 0
-      total *= 0
-      wave = 1
-      waveText.text = 'Wave: ' + wave
-      maxBaddies = 20
-      lifeText.text = livesString + playerLife // update life text
-      scoreText.text = killString + kills // update score board
-
-      invincible = false
-
-      //hides the text
-      endGameText.visible = false
-
-    }
-    }
   }
+}
+
+function restart () { //this has to be here because of the playerLife and kills
+
+  //  A new level starts
+
+  //  baddie reset
+  mob.removeAll()
+
+  //revives the player
+  player.reset(game.world.centerX, game.world.centerY)
+
+  //resets the life count
+  playerLife += 3
+  kills *= 0
+  total *= 0
+  maxBaddies = 20
+  wave = 1
+  waveText.text = 'Wave: ' + wave
+  lifeText.text = livesString + playerLife // update life text
+  scoreText.text = killString + kills // update score board
+
+  invincible = false
+
+  //hides the text
+  endGameText.visible = false
+
+}
