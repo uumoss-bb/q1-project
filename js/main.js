@@ -18,8 +18,9 @@ var wave = 1
 var waveText
 
 var bullet
-var bullets
 var bulletTime = 0
+var fireBullets
+var iceShards
 
 var kills = 0
 var killString
@@ -60,12 +61,20 @@ var gameState = {
     mob.setAll('anchor.y', 0.5)
 
     // fireBall
-    bullets = game.add.group()
-    bullets.enableBody = true
-    bullets.physicsBodyType = Phaser.Physics.ARCADE
-    bullets.createMultiple(40, 'fireBall')
-    bullets.setAll('anchor.x', 0.5)
-    bullets.setAll('anchor.y', 0.5)
+    fireBullets = game.add.group()
+    fireBullets.enableBody = true
+    fireBullets.physicsBodyType = Phaser.Physics.ARCADE
+    fireBullets.createMultiple(40, 'fireBall')
+    fireBullets.setAll('anchor.x', 0.5)
+    fireBullets.setAll('anchor.y', 0.5)
+
+    // iceShard
+    iceShards = game.add.group()
+    iceShards.enableBody = true
+    iceShards.physicsBodyType = Phaser.Physics.ARCADE
+    iceShards.createMultiple(40, 'iceShard')
+    iceShards.setAll('anchor.x', 0.5)
+    iceShards.setAll('anchor.y', 0.5)
 
     //score text
     killString = 'Deamons Slain : '
@@ -96,51 +105,21 @@ var gameState = {
     //player rotates towards the pointer
     player.rotation = game.physics.arcade.angleToPointer(player)
 
+    //baddie movement + physics + anchor point
     mob.forEach(function(el){
-      //baddie movement + physics + anchor point
       el.anchor.setTo(.5,.5)
       game.physics.arcade.enable(el)
       el.rotation = game.physics.arcade.angleBetween(el, player) + 1.57079633
       game.physics.arcade.moveToObject(el, player, 130)
       game.physics.arcade.collide(el, mob)
-
-      bullets.forEach(function (bu){
-        //this check to see if a bullet hit a baddie
-        game.physics.arcade.overlap(bu, el, baddieDeath) //check if baddie gets hit
-
-        if(invincible === false){
-          //this check to see if a baddie hit the player
-          game.physics.arcade.overlap(player, el, wizDeath) //check if baddie hits player
-        }
-        else {}
-
-          function baddieDeath (){
-            // after the baddie gets hit with a bullet
-            mob.remove(el) //the baddie dies
-            bu.kill() //the bullet dies
-            kills++ //the score goes up
-            scoreText.text = killString + kills // update score board
-          }
-        })
-      })
-
-    //player controls
-    if(game.input.keyboard.isDown(Phaser.Keyboard.A)){
-      player.x -= 4
-    }
-    else if(game.input.keyboard.isDown(Phaser.Keyboard.D)){
-      player.x += 4
-    }
-    if(game.input.keyboard.isDown(Phaser.Keyboard.W)){
-      player.y -= 4
-    }
-    else if(game.input.keyboard.isDown(Phaser.Keyboard.S)){
-      player.y += 4
-    }
+    })
 
     // shooting fireBall
-    if(game.input.activePointer.isDown && wave < 5){
+    if(game.input.activePointer.isDown && wave < 2){
       fireBullet()
+    }
+    else if(game.input.activePointer.isDown && wave >= 2){
+      iceShard()
     }
     else if(game.input.activePointer.isDown && wave >= 5){
       fireBullet2()
@@ -162,13 +141,17 @@ var gameState = {
     }
     else{}
 
+    playerMovement()
+
+    DamageHandler()
+
     }
   }
 
 function fireBullet () {
 
     if (game.time.now > bulletTime){
-      bullet = bullets.getFirstExists(false)
+      bullet = fireBullets.getFirstExists(false)
 
       if (bullet){
         bullet.reset(player.x + 10, player.y + 10)
@@ -183,9 +166,9 @@ function fireBullet () {
 function fireBullet2 () {
 
     if (game.time.now > bulletTime){
-      // bullet = bullets.getFirstExists(false)
+      // bullet = fireBullets.getFirstExists(false)
       for (var i = 0; i < 3; i++) {
-        var bullet = bullets.getFirstExists(false);
+        var bullet = fireBullets.getFirstExists(false);
         if (bullet){
           var bulletOffset = 20 * Math.sin(game.math.degToRad(player.rotation))
           var spreadAngle;
@@ -202,14 +185,94 @@ function fireBullet2 () {
   }
 }
 
-//this is not working :(
-function bulletPicker () {
-  if(wave < 2){
-    bullets.createMultiple(1, 'fireBall')
+function iceShard () {
+
+  if (game.time.now > bulletTime){
+    bullet = iceShards.getFirstExists(false)
+
+    if (bullet){
+      bullet.reset(player.x + 10, player.y + 10)
+      bullet.lifespan = 1000
+      bullet.rotation = player.rotation
+      game.physics.arcade.velocityFromRotation(player.rotation, 600, bullet.body.velocity)
+      bulletTime = game.time.now + 200
+    }
   }
-  else if(wave >= 2){
-    bullets.createMultiple(1, 'iceShard')
+}
+
+function playerMovement () {
+
+  //player controls
+  if(game.input.keyboard.isDown(Phaser.Keyboard.A)){
+    player.x -= 4
   }
+  else if(game.input.keyboard.isDown(Phaser.Keyboard.D)){
+    player.x += 4
+  }
+  if(game.input.keyboard.isDown(Phaser.Keyboard.W)){
+    player.y -= 4
+  }
+  else if(game.input.keyboard.isDown(Phaser.Keyboard.S)){
+    player.y += 4
+  }
+
+}
+
+function DamageHandler () {
+
+  mob.forEach(function(el){
+
+    fireBullets.forEach(function (bu){
+      //this check to see if a bullet hit a baddie
+      game.physics.arcade.overlap(bu, el, baddieDeath) //check if baddie gets hit
+
+    // iceShards.forEach(function (bu){
+    //   //this check to see if a bullet hit a baddie
+    //   game.physics.arcade.overlap(bu, el, baddieDeath) //check if baddie gets hit
+    //
+    // })
+
+      if(invincible === false){
+        //this check to see if a baddie hit the player
+        game.physics.arcade.overlap(player, el, playerDeath) //check if baddie hits player
+      }
+
+      function baddieDeath (){
+        // after the baddie gets hit with a bullet
+        mob.remove(el) //the baddie dies
+        bu.kill() //the bullet dies
+        kills++ //the score goes up
+        scoreText.text = killString + kills // update score board
+      }
+
+      function playerDeath () {
+
+        player.kill()
+        invincible = true
+        playerLife-- //the live goes down
+        lifeText.text = livesString + playerLife // update life text
+
+        if(playerLife > 0){
+          //this resets the player
+          player.reset(game.world.randomX, game.world.randomY)
+          //this keeps you in invincible mode for 2000 units of time
+          game.time.events.add(2000, () => invincible = false)
+        }
+        else if(playerLife === 0) {
+
+          // game over, click to restart
+          endGameText.visible = true;
+
+          //click to restart
+          game.input.onTap.addOnce(restart,this);
+
+
+        }
+      }
+
+    })
+  })
+
 }
 
 function baddieCreation(x, y) {
@@ -237,31 +300,6 @@ function baddieSpawner () {
     else {
       baddieSpawner()
     }
-  }
-}
-
-function wizDeath () {
-
-  player.kill()
-  invincible = true
-  playerLife-- //the live goes down
-  lifeText.text = livesString + playerLife // update life text
-
-  if(playerLife > 0){
-    //this resets the player
-    player.reset(game.world.randomX, game.world.randomY)
-    //this keeps you in invincible mode for 2000 units of time
-    game.time.events.add(2000, () => invincible = false)
-  }
-  else if(playerLife === 0) {
-
-    // game over, click to restart
-    endGameText.visible = true;
-
-    //click to restart
-    game.input.onTap.addOnce(restart,this);
-
-
   }
 }
 
