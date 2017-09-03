@@ -45,7 +45,7 @@ var gameState = {
     game.world.setBounds(0, 0, 1500, 1500)
     game.add.tileSprite(0, 0, 1500, 1500, 'background')
 
-    //this is you
+    //this the player
     player = game.add.sprite(game.world.centerX, game.world.centerY, 'player')
     game.physics.arcade.enable(player)
     player.body.collideWorldBounds = true
@@ -92,7 +92,7 @@ var gameState = {
     endGameText.visible = false;
     endGameText.fixedToCamera = true
 
-    //wave show
+    //wave text
     waveText = game.add.text(900, 30, 'Wave:' + wave, { font: '34px Helvetica', fill: '#212329' })
     waveText.anchor.setTo(0.5, 0.5);
     waveText.visible = true
@@ -115,10 +115,10 @@ var gameState = {
     })
 
     // shooting fireBall
-    if(game.input.activePointer.isDown && wave < 2){
+    if(game.input.activePointer.isDown){
       fireBullet()
     }
-    else if(game.input.activePointer.isDown && wave >= 2){
+    else if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && wave >= 2){
       iceShard()
     }
     else if(game.input.activePointer.isDown && wave >= 5){
@@ -132,9 +132,10 @@ var gameState = {
     if(total > 0 && mob.length === 0) {
       wave++
       waveText.text = "Wave: " + wave
-      maxBaddies *= 2
+      maxBaddies += 50
       total = 0
-      if(wave >= 4){
+      console.log(maxBaddies)
+      if(wave >= 5){
         playerLife++
         lifeText.text = livesString + playerLife // update life text
       }
@@ -143,7 +144,9 @@ var gameState = {
 
     playerMovement()
 
-    DamageHandler()
+    DamageHandler(fireBullets)
+
+    DamageHandler(iceShards)
 
     }
   }
@@ -195,7 +198,7 @@ function iceShard () {
       bullet.lifespan = 1000
       bullet.rotation = player.rotation
       game.physics.arcade.velocityFromRotation(player.rotation, 600, bullet.body.velocity)
-      bulletTime = game.time.now + 200
+      bulletTime = game.time.now + 100
     }
   }
 }
@@ -218,19 +221,13 @@ function playerMovement () {
 
 }
 
-function DamageHandler () {
+function DamageHandler (magicBullets) {
 
   mob.forEach(function(el){
 
-    fireBullets.forEach(function (bu){
+    magicBullets.forEach(function (bu){
       //this check to see if a bullet hit a baddie
       game.physics.arcade.overlap(bu, el, baddieDeath) //check if baddie gets hit
-
-    // iceShards.forEach(function (bu){
-    //   //this check to see if a bullet hit a baddie
-    //   game.physics.arcade.overlap(bu, el, baddieDeath) //check if baddie gets hit
-    //
-    // })
 
       if(invincible === false){
         //this check to see if a baddie hit the player
@@ -274,6 +271,58 @@ function DamageHandler () {
   })
 
 }
+
+// function iceDamageHandler () {
+//
+//   mob.forEach(function(el){
+//
+//     iceShards.forEach(function (bu){
+//       //this check to see if a bullet hit a baddie
+//       game.physics.arcade.overlap(bu, el, baddieDeath) //check if baddie gets hit
+//
+//
+//       if(invincible === false){
+//         //this check to see if a baddie hit the player
+//         game.physics.arcade.overlap(player, el, playerDeath) //check if baddie hits player
+//       }
+//
+//       function baddieDeath (){
+//         // after the baddie gets hit with a bullet
+//         mob.remove(el) //the baddie dies
+//         bu.kill() //the bullet dies
+//         kills++ //the score goes up
+//         scoreText.text = killString + kills // update score board
+//       }
+//
+//       function playerDeath () {
+//
+//         player.kill()
+//         invincible = true
+//         playerLife-- //the live goes down
+//         lifeText.text = livesString + playerLife // update life text
+//
+//         if(playerLife > 0){
+//           //this resets the player
+//           player.reset(game.world.randomX, game.world.randomY)
+//           //this keeps you in invincible mode for 2000 units of time
+//           game.time.events.add(2000, () => invincible = false)
+//         }
+//         else if(playerLife === 0) {
+//
+//           // game over, click to restart
+//           endGameText.visible = true;
+//
+//           //click to restart
+//           game.input.onTap.addOnce(restart,this);
+//
+//
+//         }
+//       }
+//
+//     })
+//   })
+//
+// }
 
 function baddieCreation(x, y) {
   mob.add(game.add.sprite(x, y, 'baddie'))
