@@ -188,17 +188,6 @@ var gameState = {
 
     powerInUse(powerList[powerNum])
 
-    // // your power controls
-    // if(game.input.activePointer.isDown && wave < 5){
-    //   fireBall()
-    // }
-    // else if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && wave >= 2){
-    //   iceShard()
-    // }
-    // else if(game.input.activePointer.isDown && wave >= 5){
-    //   fireBall2()
-    // }
-
     playerMovement()
 
     DamageHandler(fireBalls)
@@ -220,7 +209,7 @@ function fireBall () {
       bullet = fireBalls.getFirstExists(false)
 
       if (bullet){
-        bullet.reset(player.x + 10, player.y + 10)
+        bullet.reset(player.x, player.y)
         bullet.lifespan = 1000
         bullet.rotation = player.rotation
         game.physics.arcade.velocityFromRotation(player.rotation, 400, bullet.body.velocity)
@@ -257,7 +246,7 @@ function iceShard () {
     bullet = iceShards.getFirstExists(false)
 
     if (bullet){
-      bullet.reset(player.x + 10, player.y + 10)
+      bullet.reset(player.x, player.y)
       bullet.lifespan = 1000
       bullet.rotation = player.rotation
       game.physics.arcade.velocityFromRotation(player.rotation, 600, bullet.body.velocity)
