@@ -18,9 +18,11 @@ var wave = 1
 var waveText
 var wavePause = false
 
+var powerList = [fireBall]
+var powerNum = 0
 var bullet
 var bulletTime = 0
-var fireBullets
+var fireBalls
 var iceShards
 
 var kills = 0
@@ -62,12 +64,12 @@ var gameState = {
     mob.setAll('anchor.y', 0.5)
 
     // fireBall
-    fireBullets = game.add.group()
-    fireBullets.enableBody = true
-    fireBullets.physicsBodyType = Phaser.Physics.ARCADE
-    fireBullets.createMultiple(40, 'fireBall')
-    fireBullets.setAll('anchor.x', 0.5)
-    fireBullets.setAll('anchor.y', 0.5)
+    fireBalls = game.add.group()
+    fireBalls.enableBody = true
+    fireBalls.physicsBodyType = Phaser.Physics.ARCADE
+    fireBalls.createMultiple(40, 'fireBall')
+    fireBalls.setAll('anchor.x', 0.5)
+    fireBalls.setAll('anchor.y', 0.5)
 
     // iceShard
     iceShards = game.add.group()
@@ -100,7 +102,7 @@ var gameState = {
     waveText.fixedToCamera = true
 
     //ice Shard anoucement
-    iceInstruction = game.add.text(500, 200, '    You now have Ice powers\n hold the spacebar to use them', { font: '34px Helvetica', fill: '#212329' })
+    iceInstruction = game.add.text(500, 200, '    You now have Ice powers\nuse 1 and 2 to toggle powers', { font: '34px Helvetica', fill: '#212329' })
     iceInstruction.anchor.setTo(0.5, 0.5);
     iceInstruction.visible = false
     iceInstruction.fixedToCamera = true
@@ -126,8 +128,8 @@ var gameState = {
 
     //this handles the pause between waves
     if(mob.length === 0){
-
-      if(wave === 1){ //ice powers update
+      //this updates player on new powers
+      if(wave === 2){
         iceInstruction.visible = true
       }
       game.time.events.add(4000, () => wavePause = true) // this restarts things on a starter
@@ -153,34 +155,57 @@ var gameState = {
       }
     }
 
-    // if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && wave >= 2){
-    //   var powerSelection = [fire]
-    // }
+    // controls for toggling power
+    if(game.input.keyboard.isDown(Phaser.Keyboard.ONE)){
+      powerNum = 0
+    }
+    if(wave >= 3) {
+      if(game.input.keyboard.isDown(Phaser.Keyboard.TWO)){
+        powerNum = 1
+      }
+    }
 
-    // your power controls
-    if(game.input.activePointer.isDown && wave < 5){
-      fireBullet()
+    //this updates your powerList as you go on
+    if( wave === 3 && total <= 0) { //You want the total there so this only happens for a second
+      powerList.push(iceShard)
     }
-    else if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && wave >= 2){
-      iceShard()
+    if( wave === 5 && total <= 0) { //You want the total there so this only happens for a second
+      powerList.splice(0, 1, fireBall2)
+      console.log(powerList)
     }
-    else if(game.input.activePointer.isDown && wave >= 5){
-      fireBullet2()
-    }
+
+    powerInUse(powerList[powerNum])
+
+    // // your power controls
+    // if(game.input.activePointer.isDown && wave < 5){
+    //   fireBall()
+    // }
+    // else if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && wave >= 2){
+    //   iceShard()
+    // }
+    // else if(game.input.activePointer.isDown && wave >= 5){
+    //   fireBall2()
+    // }
 
     playerMovement()
 
-    DamageHandler(fireBullets)
+    DamageHandler(fireBalls)
 
     DamageHandler(iceShards)
 
     }
   }
 
-function fireBullet () {
+function powerInUse (thePower) {
+  if(game.input.activePointer.isDown){
+    thePower()
+  }
+}
+
+function fireBall () {
 
     if (game.time.now > bulletTime){
-      bullet = fireBullets.getFirstExists(false)
+      bullet = fireBalls.getFirstExists(false)
 
       if (bullet){
         bullet.reset(player.x + 10, player.y + 10)
@@ -192,12 +217,12 @@ function fireBullet () {
   }
 }
 
-function fireBullet2 () {
+function fireBall2 () {
 
     if (game.time.now > bulletTime){
-      // bullet = fireBullets.getFirstExists(false)
+      // bullet = fireBalls.getFirstExists(false)
       for (var i = 0; i < 3; i++) {
-        var bullet = fireBullets.getFirstExists(false);
+        var bullet = fireBalls.getFirstExists(false);
         if (bullet){
           var bulletOffset = 20 * Math.sin(game.math.degToRad(player.rotation))
           var spreadAngle;
@@ -342,6 +367,9 @@ function restart () {
   total *= 0
   maxBaddies = 20
   wave = 1
+  powerList.splice(0, 2)
+  powerList.push(fireBall)
+  console.log(powerList)
   waveText.text = 'Wave: ' + wave
   lifeText.text = livesString + playerLife // update life text
   scoreText.text = killString + kills // update score board
