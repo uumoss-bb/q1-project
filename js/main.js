@@ -121,6 +121,9 @@ var gameState = {
 
   update: function () {
 
+    // this spawns bad guys after 2000 units of time
+    game.time.events.add(2000, baddieSpawner)
+
     //player rotates towards the pointer
     player.rotation = game.physics.arcade.angleToPointer(player)
 
@@ -132,9 +135,6 @@ var gameState = {
       game.physics.arcade.moveToObject(el, player, 130)
       game.physics.arcade.collide(el, mob)
     })
-
-    // this spawns bad guys after 2000 units of time
-    game.time.events.add(2000, baddieSpawner)
 
     //this handles the pause between waves
     if(mob.length === 0){
