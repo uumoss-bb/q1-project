@@ -52,13 +52,6 @@ var gameState = {
     game.world.setBounds(0, 0, 1500, 1500)
     game.add.tileSprite(0, 0, 1500, 1500, 'background')
 
-    //this the player
-    player = game.add.sprite(game.world.centerX, game.world.centerY, 'player')
-    game.physics.arcade.enable(player)
-    player.body.collideWorldBounds = true
-    player.anchor.setTo(0.5, 0.5)
-    game.camera.follow(player)
-
     //the bad guys
     mob = game.add.group()
     mob.enableBody = true
@@ -82,6 +75,13 @@ var gameState = {
     iceShards.createMultiple(40, 'iceShard')
     iceShards.setAll('anchor.x', 0.5)
     iceShards.setAll('anchor.y', 0.5)
+
+    //this the player
+    player = game.add.sprite(game.world.centerX, game.world.centerY, 'player')
+    game.physics.arcade.enable(player)
+    player.body.collideWorldBounds = true
+    player.anchor.setTo(0.5, 0.5)
+    game.camera.follow(player)
 
     //score text
     killString = 'Deamons Slain : '
