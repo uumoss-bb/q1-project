@@ -16,6 +16,7 @@ var timer
 var maxBaddies = 20
 var wave = 1
 var waveText
+var wavePause = false
 
 var bullet
 var bulletTime = 0
@@ -98,6 +99,12 @@ var gameState = {
     waveText.visible = true
     waveText.fixedToCamera = true
 
+    //ice Shard anoucement
+    iceInstruction = game.add.text(500, 200, '    You now have Ice powers\n hold the spacebar to use them', { font: '34px Helvetica', fill: '#212329' })
+    iceInstruction.anchor.setTo(0.5, 0.5);
+    iceInstruction.visible = false
+    iceInstruction.fixedToCamera = true
+
   },
 
   update: function () {
@@ -114,8 +121,44 @@ var gameState = {
       game.physics.arcade.collide(el, mob)
     })
 
-    // shooting fireBall
-    if(game.input.activePointer.isDown){
+    // this spawns bad guys after 2000 units of time
+    game.time.events.add(2000, baddieSpawner)
+
+    //this handles the pause between waves
+    if(mob.length === 0){
+
+      if(wave === 1){ //ice powers update
+        iceInstruction.visible = true
+      }
+      game.time.events.add(4000, () => wavePause = true) // this restarts things on a starter
+    }
+    else if ( total > 0 ) {
+      wavePause = false
+    }
+
+    // this pushes you to the nextWave
+    if (wavePause === true){
+      wave++
+      waveText.text = "Wave: " + wave
+      maxBaddies += 50
+      total = 0
+
+      //this turns the instrunctions off once every thing restarts
+      iceInstruction.visible = false
+      console.log(maxBaddies)
+
+      if(wave >= 5){
+        playerLife++
+        lifeText.text = livesString + playerLife // update life text
+      }
+    }
+
+    // if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && wave >= 2){
+    //   var powerSelection = [fire]
+    // }
+
+    // your power controls
+    if(game.input.activePointer.isDown && wave < 5){
       fireBullet()
     }
     else if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && wave >= 2){
@@ -124,23 +167,6 @@ var gameState = {
     else if(game.input.activePointer.isDown && wave >= 5){
       fireBullet2()
     }
-
-    // this spawns bad guys after 2000 units of time
-    game.time.events.add(2000, baddieSpawner)
-
-    // this pushes you to the nextWave
-    if(total > 0 && mob.length === 0) {
-      wave++
-      waveText.text = "Wave: " + wave
-      maxBaddies += 50
-      total = 0
-      console.log(maxBaddies)
-      if(wave >= 5){
-        playerLife++
-        lifeText.text = livesString + playerLife // update life text
-      }
-    }
-    else{}
 
     playerMovement()
 
@@ -272,58 +298,6 @@ function DamageHandler (magicBullets) {
 
 }
 
-// function iceDamageHandler () {
-//
-//   mob.forEach(function(el){
-//
-//     iceShards.forEach(function (bu){
-//       //this check to see if a bullet hit a baddie
-//       game.physics.arcade.overlap(bu, el, baddieDeath) //check if baddie gets hit
-//
-//
-//       if(invincible === false){
-//         //this check to see if a baddie hit the player
-//         game.physics.arcade.overlap(player, el, playerDeath) //check if baddie hits player
-//       }
-//
-//       function baddieDeath (){
-//         // after the baddie gets hit with a bullet
-//         mob.remove(el) //the baddie dies
-//         bu.kill() //the bullet dies
-//         kills++ //the score goes up
-//         scoreText.text = killString + kills // update score board
-//       }
-//
-//       function playerDeath () {
-//
-//         player.kill()
-//         invincible = true
-//         playerLife-- //the live goes down
-//         lifeText.text = livesString + playerLife // update life text
-//
-//         if(playerLife > 0){
-//           //this resets the player
-//           player.reset(game.world.randomX, game.world.randomY)
-//           //this keeps you in invincible mode for 2000 units of time
-//           game.time.events.add(2000, () => invincible = false)
-//         }
-//         else if(playerLife === 0) {
-//
-//           // game over, click to restart
-//           endGameText.visible = true;
-//
-//           //click to restart
-//           game.input.onTap.addOnce(restart,this);
-//
-//
-//         }
-//       }
-//
-//     })
-//   })
-//
-// }
-
 function baddieCreation(x, y) {
   mob.add(game.add.sprite(x, y, 'baddie'))
 
@@ -352,7 +326,7 @@ function baddieSpawner () {
   }
 }
 
-function restart () { //this has to be here because of the playerLife and kills
+function restart () {
 
   //  A new level starts
 
