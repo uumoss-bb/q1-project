@@ -1,8 +1,8 @@
 
 var player
 var playerLife = 3
+var lifeText
 var livesString
-var lifetext
 var invincible = false
 
 var baddie
@@ -24,10 +24,14 @@ var bullet
 var bulletTime = 0
 var fireBalls
 var iceShards
+var iceInstruction
+var fireUpgradeText
 
 var kills = 0
 var killString
 var scoreText
+
+var endGameText
 
 var gameState = {
 
@@ -102,10 +106,16 @@ var gameState = {
     waveText.fixedToCamera = true
 
     //ice Shard anoucement
-    iceInstruction = game.add.text(500, 200, '    You now have Ice powers\nuse 1 and 2 to toggle powers', { font: '34px Helvetica', fill: '#212329' })
+    iceInstruction = game.add.text(500, 200, '  You now have Ice powers\nuse 1 and 2 to toggle powers', { font: '34px Helvetica', fill: '#212329' })
     iceInstruction.anchor.setTo(0.5, 0.5);
     iceInstruction.visible = false
     iceInstruction.fixedToCamera = true
+
+    //fireBall upgrade anoucement
+    fireUpgradeText = game.add.text(500, 200, 'You Fire Ball has leveled UP!', { font: '34px Helvetica', fill: '#212329' })
+    fireUpgradeText.anchor.setTo(0.5, 0.5);
+    fireUpgradeText.visible = false
+    fireUpgradeText.fixedToCamera = true
 
   },
 
@@ -132,6 +142,9 @@ var gameState = {
       if(wave === 2){
         iceInstruction.visible = true
       }
+      if(wave === 4){
+        fireUpgradeText.visible = true
+      }
       game.time.events.add(4000, () => wavePause = true) // this restarts things on a starter
     }
     else if ( total > 0 ) {
@@ -147,7 +160,7 @@ var gameState = {
 
       //this turns the instrunctions off once every thing restarts
       iceInstruction.visible = false
-      console.log(maxBaddies)
+      fireUpgradeText.visible = false
 
       if(wave >= 5){
         playerLife++
@@ -171,7 +184,6 @@ var gameState = {
     }
     if( wave === 5 && total <= 0) { //You want the total there so this only happens for a second
       powerList.splice(0, 1, fireBall2)
-      console.log(powerList)
     }
 
     powerInUse(powerList[powerNum])
@@ -369,7 +381,6 @@ function restart () {
   wave = 1
   powerList.splice(0, 2)
   powerList.push(fireBall)
-  console.log(powerList)
   waveText.text = 'Wave: ' + wave
   lifeText.text = livesString + playerLife // update life text
   scoreText.text = killString + kills // update score board
