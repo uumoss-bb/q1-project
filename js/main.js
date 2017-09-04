@@ -368,6 +368,7 @@ function restart () {
   total *= 0
   maxBaddies = 20
   wave = 1
+  powerNum = 0
   powerList.splice(0, 2)
   powerList.push(fireBall)
   waveText.text = 'Wave: ' + wave
