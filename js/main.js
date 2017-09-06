@@ -24,6 +24,7 @@ var bullet
 var bulletTime = 0
 var fireBalls
 var iceShards
+var rockFists
 var iceInstruction
 var fireUpgradeText
 
@@ -32,6 +33,8 @@ var killString
 var scoreText
 
 var endGameText
+
+var test
 
 var gameState = {
 
@@ -42,6 +45,7 @@ var gameState = {
     this.load.image('baddie', 'assets/people/bady_0.1.png')
     this.load.image('fireBall', 'assets/fireBall.png')
     this.load.image('iceShard', 'assets/ice_shard.png')
+    this.load.image('rockFist', 'assets/rockFist.png')
     this.load.image('playBtn', 'assets/play_btn.png')
   },
 
@@ -75,6 +79,22 @@ var gameState = {
     iceShards.createMultiple(40, 'iceShard')
     iceShards.setAll('anchor.x', 0.5)
     iceShards.setAll('anchor.y', 0.5)
+
+    // rockFist
+    rockFists = game.add.group()
+    rockFists.enableBody = true
+    rockFists.physicsBodyType = Phaser.Physics.ARCADE
+    rockFists.createMultiple(5, 'rockFist')
+    rockFists.setAll('anchor.x', 0.5)
+    rockFists.setAll('anchor.y', 0.5)
+    test = game.add.sprite(500,200, 'rockFist')
+    // rockFists.forEach((el) => {
+    //   var rockAnime = el.animations.add('rockAnime')
+    //   el.animations.play('rockAnime', 30, true)
+    // })
+    var rockAnime = test.animations.add('rockAnime')
+
+
 
     //this the player
     player = game.add.sprite(game.world.centerX, game.world.centerY, 'player')
@@ -120,6 +140,7 @@ var gameState = {
   },
 
   update: function () {
+    // test.animations.play('rockAnime', 30, true)
 
     // this spawns bad guys after 2000 units of time
     game.time.events.add(2000, baddieSpawner)
@@ -251,6 +272,21 @@ function iceShard () {
       bullet.rotation = player.rotation
       game.physics.arcade.velocityFromRotation(player.rotation, 600, bullet.body.velocity)
       bulletTime = game.time.now + 100
+    }
+  }
+}
+
+function rockFist () {
+
+    if (game.time.now > bulletTime){
+      bullet = rockFists.getFirstExists(false)
+
+      if (bullet){
+        bullet.reset(player.x, player.y)
+        bullet.lifespan = 1000
+        bullet.rotation = player.rotation
+        game.physics.arcade.velocityFromRotation(player.rotation, 400, bullet.body.velocity)
+        bulletTime = game.time.now + 200
     }
   }
 }
