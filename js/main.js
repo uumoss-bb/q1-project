@@ -18,7 +18,7 @@ var wave = 1
 var waveText
 var wavePause = false
 
-var powerList = [rockFist]
+var powerList = [fireBall]
 var powerNum = 0
 var bullet
 var bulletTime = 0
@@ -84,7 +84,7 @@ var gameState = {
     rockFists = game.add.group()
     rockFists.enableBody = true
     rockFists.physicsBodyType = Phaser.Physics.ARCADE
-    rock = rockFists.create(0,0,'rockFist')
+    rockFists.createMultiple(3,'rockFist')
     rockFists.setAll('anchor.x', 0.5)
     rockFists.setAll('anchor.y', 0.5)
 
@@ -129,6 +129,12 @@ var gameState = {
     fireUpgradeText.visible = false
     fireUpgradeText.fixedToCamera = true
 
+    //rockFist anoucement
+    rockInstruction = game.add.text(500, 200, 'You now how Rock powers, hit 3 to use', { font: '34px Helvetica', fill: '#212329' })
+    rockInstruction.anchor.setTo(0.5, 0.5);
+    rockInstruction.visible = false
+    rockInstruction.fixedToCamera = true
+
   },
 
   update: function () {
@@ -157,13 +163,16 @@ var gameState = {
       if(wave === 4){
         fireUpgradeText.visible = true
       }
+      if(wave === 6){
+        rockInstruction.visible = true
+      }
       game.time.events.add(4000, () => wavePause = true) // this restarts things on a starter
     }
     else if ( total > 0 ) {
       wavePause = false
     }
 
-    // this pushes you to the nextWave
+    // this resets everything for the next wave
     if (wavePause === true){
       wave++
       waveText.text = "Wave: " + wave
@@ -173,6 +182,7 @@ var gameState = {
       //this turns the instrunctions off once every thing restarts
       iceInstruction.visible = false
       fireUpgradeText.visible = false
+      rockInstruction.visible = false
 
       if(wave >= 5){
         playerLife++
@@ -189,6 +199,11 @@ var gameState = {
         powerNum = 1
       }
     }
+    if(wave >= 7) {
+      if(game.input.keyboard.isDown(Phaser.Keyboard.THREE)){
+        powerNum = 2
+      }
+    }
 
     //this updates your powerList as you go on
     if( wave === 3 && total <= 0) { //You want the total there so this only happens for a second
@@ -197,6 +212,10 @@ var gameState = {
     if( wave === 5 && total <= 0) { //You want the total there so this only happens for a second
       powerList.splice(0, 1, fireBall2)
     }
+    if( wave === 7 && total <= 0) { //You want the total there so this only happens for a second
+      powerList.push(rockFist)
+    }
+
 
     powerInUse(powerList[powerNum])
 
@@ -206,7 +225,11 @@ var gameState = {
 
     DamageHandler(iceShards)
 
-    DamageHandler(rockFists)
+    rockDamageHandler()// rock powers need its own damgae handler so the bullets dont die on impact
+    //this stops the rockFist from moving after animationn is complete
+    rockFists.forEach((rock) =>
+    rock.events.onAnimationComplete.add(() => game.physics.arcade.velocityFromRotation(player.rotation,
+      0, rock.body.velocity)), this, true)
 
     }
   }
@@ -271,12 +294,26 @@ function iceShard () {
 
 function rockFist () {
 
-    var rockAnime = rock.animations.add('rockAnime',[0,1,2,3,4])
-    rock.animations.play('rockAnime',20, false)
-    rock.reset(player.x, player.y,)
-    rock.lifespan = 600
-    game.physics.arcade.velocityFromRotation(player.rotation, 200, rock.body.velocity)
-    rock.events.onAnimationComplete.add(() =>   game.physics.arcade.velocityFromRotation(player.rotation, 0, rock.body.velocity))
+  if (game.time.now > bulletTime){
+    // bullet = fireBalls.getFirstExists(false)
+    for (var i = 0; i < 3; i++) {
+      var bullet = rockFists.getFirstExists(false);
+      if (bullet){
+        var bulletOffset = 20 * Math.sin(game.math.degToRad(player.rotation))
+        var spreadAngle;
+        if (i === 0) spreadAngle = -200
+        if (i === 1) spreadAngle = 0;
+        if (i === 2) spreadAngle = 200;
+        bullet.reset(player.x + bulletOffset, player.y )
+        bullet.lifespan = 1000
+        game.physics.arcade.velocityFromRotation(player.rotation + spreadAngle, 150, bullet.body.velocity)
+        bulletTime = game.time.now + 350
+        rockAnime = bullet.animations.add('rockAnime',[0,1,2,3,4])
+        bullet.animations.play('rockAnime',10, false)
+      }
+    }
+  }
+
 }
 
 function playerMovement () {
@@ -314,6 +351,56 @@ function DamageHandler (magicBullets) {
         // after the baddie gets hit with a bullet
         mob.remove(el) //the baddie dies
         bu.kill() //the bullet dies
+        kills++ //the score goes up
+        scoreText.text = killString + kills // update score board
+      }
+
+      function playerDeath () {
+
+        player.kill()
+        invincible = true
+        playerLife-- //the live goes down
+        lifeText.text = livesString + playerLife // update life text
+
+        if(playerLife > 0){
+          //this resets the player
+          player.reset(game.world.randomX, game.world.randomY)
+          //this keeps you in invincible mode for 2000 units of time
+          game.time.events.add(2000, () => invincible = false)
+        }
+        else if(playerLife === 0) {
+
+          // game over, click to restart
+          endGameText.visible = true;
+
+          //click to restart
+          game.input.onTap.addOnce(restart,this);
+
+
+        }
+      }
+
+    })
+  })
+
+}
+
+function rockDamageHandler () {
+
+  mob.forEach(function(el){
+
+    rockFists.forEach(function (bu){
+      //this check to see if a bullet hit a baddie
+      game.physics.arcade.overlap(bu, el, baddieDeath) //check if baddie gets hit
+
+      if(invincible === false){
+        //this check to see if a baddie hit the player
+        game.physics.arcade.overlap(player, el, playerDeath) //check if baddie hits player
+      }
+
+      function baddieDeath (){
+        // after the baddie gets hit with a bullet
+        mob.remove(el) //the baddie dies
         kills++ //the score goes up
         scoreText.text = killString + kills // update score board
       }
