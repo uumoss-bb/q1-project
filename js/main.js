@@ -18,7 +18,7 @@ var wave = 1
 var waveText
 var wavePause = false
 
-var powerList = [fireBall]
+var powerList = [rockFist]
 var powerNum = 0
 var bullet
 var bulletTime = 0
@@ -45,7 +45,7 @@ var gameState = {
     this.load.image('baddie', 'assets/people/bady_0.1.png')
     this.load.image('fireBall', 'assets/fireBall.png')
     this.load.image('iceShard', 'assets/ice_shard.png')
-    this.load.image('rockFist', 'assets/rockFist.png')
+    this.load.spritesheet('rockFist', 'assets/rockFist.png', 54, 64, 5)
     this.load.image('playBtn', 'assets/play_btn.png')
   },
 
@@ -84,17 +84,9 @@ var gameState = {
     rockFists = game.add.group()
     rockFists.enableBody = true
     rockFists.physicsBodyType = Phaser.Physics.ARCADE
-    rockFists.createMultiple(5, 'rockFist')
+    rock = rockFists.create(0,0,'rockFist')
     rockFists.setAll('anchor.x', 0.5)
     rockFists.setAll('anchor.y', 0.5)
-    test = game.add.sprite(500,200, 'rockFist')
-    // rockFists.forEach((el) => {
-    //   var rockAnime = el.animations.add('rockAnime')
-    //   el.animations.play('rockAnime', 30, true)
-    // })
-    var rockAnime = test.animations.add('rockAnime')
-
-
 
     //this the player
     player = game.add.sprite(game.world.centerX, game.world.centerY, 'player')
@@ -140,7 +132,6 @@ var gameState = {
   },
 
   update: function () {
-    // test.animations.play('rockAnime', 30, true)
 
     // this spawns bad guys after 2000 units of time
     game.time.events.add(2000, baddieSpawner)
@@ -215,6 +206,8 @@ var gameState = {
 
     DamageHandler(iceShards)
 
+    DamageHandler(rockFists)
+
     }
   }
 
@@ -278,17 +271,12 @@ function iceShard () {
 
 function rockFist () {
 
-    if (game.time.now > bulletTime){
-      bullet = rockFists.getFirstExists(false)
-
-      if (bullet){
-        bullet.reset(player.x, player.y)
-        bullet.lifespan = 1000
-        bullet.rotation = player.rotation
-        game.physics.arcade.velocityFromRotation(player.rotation, 400, bullet.body.velocity)
-        bulletTime = game.time.now + 200
-    }
-  }
+    var rockAnime = rock.animations.add('rockAnime',[0,1,2,3,4])
+    rock.animations.play('rockAnime',20, false)
+    rock.reset(player.x, player.y,)
+    rock.lifespan = 600
+    game.physics.arcade.velocityFromRotation(player.rotation, 200, rock.body.velocity)
+    rock.events.onAnimationComplete.add(() =>   game.physics.arcade.velocityFromRotation(player.rotation, 0, rock.body.velocity))
 }
 
 function playerMovement () {
