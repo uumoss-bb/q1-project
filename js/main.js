@@ -480,7 +480,7 @@ function restart () {
   maxBaddies = 20
   wave = 1
   powerNum = 0
-  powerList.splice(0, 2)
+  powerList.splice(0, 3)
   powerList.push(fireBall)
   waveText.text = 'Wave: ' + wave
   lifeText.text = livesString + playerLife // update life text
