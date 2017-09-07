@@ -130,7 +130,7 @@ var gameState = {
     fireUpgradeText.fixedToCamera = true
 
     //rockFist anoucement
-    rockInstruction = game.add.text(500, 200, 'You now how Rock powers, hit 3 to use', { font: '34px Helvetica', fill: '#212329' })
+    rockInstruction = game.add.text(500, 200, 'You now have Rock powers, hit SPACEBAR to use', { font: '34px Helvetica', fill: '#212329' })
     rockInstruction.anchor.setTo(0.5, 0.5);
     rockInstruction.visible = false
     rockInstruction.fixedToCamera = true
@@ -200,8 +200,8 @@ var gameState = {
       }
     }
     if(wave >= 7) {
-      if(game.input.keyboard.isDown(Phaser.Keyboard.THREE)){
-        powerNum = 2
+      if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
+        rockFist()
       }
     }
 
@@ -212,9 +212,9 @@ var gameState = {
     if( wave === 5 && total <= 0) { //You want the total there so this only happens for a second
       powerList.splice(0, 1, fireBall2)
     }
-    if( wave === 7 && total <= 0) { //You want the total there so this only happens for a second
-      powerList.push(rockFist)
-    }
+    // if( wave === 7 && total <= 0) { //You want the total there so this only happens for a second
+    //   powerList.push(rockFist)
+    // }
 
 
     powerInUse(powerList[powerNum])
@@ -480,7 +480,7 @@ function restart () {
   maxBaddies = 20
   wave = 1
   powerNum = 0
-  powerList.splice(0, 3)
+  powerList.splice(0, 2)
   powerList.push(fireBall)
   waveText.text = 'Wave: ' + wave
   lifeText.text = livesString + playerLife // update life text
