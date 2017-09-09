@@ -444,7 +444,7 @@ function baddieCreation(x, y) {
 
 function baddieSpawner () {
 
-  if(total < maxBaddies && game.time.now > timer) {
+  if(total < maxBaddies && game.time.now > timer && mob.length < 200) {
     var spawnBufferDist = 40;
 
     var rndX = Math.floor(Math.random() * (1000 - 1 + 1)) // [1-1000]
